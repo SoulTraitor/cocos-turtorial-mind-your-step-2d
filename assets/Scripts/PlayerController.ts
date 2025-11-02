@@ -23,6 +23,12 @@ export class PlayerController extends Component {
     private _curMoveIndex: number = 0;
 
     /**
+     * 生命周期函数
+     */
+    start() {
+    }
+
+    /**
      * 设置输入响应状态
      * @param active    是否响应输入
      */
