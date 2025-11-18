@@ -1,4 +1,4 @@
-import { _decorator, Animation, Component, EventMouse, EventTouch, Input, input, Node, Vec3 } from 'cc';
+import { _decorator, Animation, Component, EventMouse, EventTouch, Input, input, Node, Sprite, Vec3, Color, tween } from 'cc';
 const { ccclass, property } = _decorator;
 
 export const BLOCK_SIZE = 40; // 添加一个放大比
@@ -21,6 +21,7 @@ export class PlayerController extends Component {
     private _deltaPos: Vec3 = new Vec3(0, 0, 0);
     private _targetPos: Vec3 = new Vec3();
     private _curMoveIndex: number = 0;
+    private _initColor: Color = new Color(255, 0, 0, 255);
 
     /**
      * 生命周期函数
@@ -48,6 +49,7 @@ export class PlayerController extends Component {
      * 重置玩家状态
      */
     reset() {
+        this.node.getChildByName("Body").getComponent(Sprite).color = this._initColor;
         this._curMoveIndex = 0;
         this.node.getPosition(this._curPos);
         this._targetPos.set(0, 0, 0);
@@ -105,6 +107,23 @@ export class PlayerController extends Component {
             } else if (step === 2) {
                 this.BodyAnim.play('twoStep');
             }
+
+            // 颜色变换效果
+            const color = this._initColor.clone();
+            tween(color)
+                .to(this._jumpTime, { r: 100, g: 100, b: 100, a: 100 }, {
+                    onUpdate: () => {
+                        this.node.getChildByName("Body").getComponent(Sprite).color = color;
+                    }
+                })
+                .timeScale(2)
+                .to(this._jumpTime, { r: this._initColor.r, g: this._initColor.g, b: this._initColor.b, a: this._initColor.a }, {
+                    onUpdate: () => {
+                        this.node.getChildByName("Body").getComponent(Sprite).color = color;
+                    }
+                })
+                .timeScale(2)
+                .start();
         }
 
         this._curMoveIndex += step;
