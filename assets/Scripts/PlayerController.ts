@@ -1,4 +1,4 @@
-import { _decorator, Animation, Component, EventMouse, EventTouch, Input, input, Node, Sprite, Vec3, Color, tween } from 'cc';
+import { _decorator, Animation, Color, Component, EventMouse, EventTouch, Input, input, Node, Sprite, Tween, tween, Vec3 } from 'cc';
 const { ccclass, property } = _decorator;
 
 export const BLOCK_SIZE = 40; // 添加一个放大比
@@ -49,7 +49,8 @@ export class PlayerController extends Component {
      * 重置玩家状态
      */
     reset() {
-        this.node.getChildByName("Body").getComponent(Sprite).color = this._initColor;
+        Tween.stopAllByTarget(this.node.getChildByName("Body").getComponent(Sprite));
+        this.node.getChildByName("Body").getComponent(Sprite).color = this._initColor.clone();
         this._curMoveIndex = 0;
         this.node.getPosition(this._curPos);
         this._targetPos.set(0, 0, 0);
