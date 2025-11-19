@@ -21,12 +21,14 @@ export class PlayerController extends Component {
     private _deltaPos: Vec3 = new Vec3(0, 0, 0);
     private _targetPos: Vec3 = new Vec3();
     private _curMoveIndex: number = 0;
+    private _bodySpirite: Sprite = null;
     private _initColor: Color = new Color(255, 0, 0, 255);
 
     /**
      * 生命周期函数
      */
     start() {
+        this._bodySpirite = this.node.getChildByName("Body").getComponent(Sprite);
     }
 
     /**
@@ -49,8 +51,8 @@ export class PlayerController extends Component {
      * 重置玩家状态
      */
     reset() {
-        Tween.stopAllByTarget(this.node.getChildByName("Body").getComponent(Sprite));
-        this.node.getChildByName("Body").getComponent(Sprite).color = this._initColor.clone();
+        Tween.stopAllByTarget(this._bodySpirite);
+        this._bodySpirite.color = this._initColor.clone();
         this._curMoveIndex = 0;
         this.node.getPosition(this._curPos);
         this._targetPos.set(0, 0, 0);
@@ -112,22 +114,32 @@ export class PlayerController extends Component {
             // 颜色变换效果
             const color = this._initColor.clone();
             tween(color)
-                .to(this._jumpTime, { r: 100, g: 100, b: 100, a: 100 }, {
-                    onUpdate: () => {
-                        this.node.getChildByName("Body").getComponent(Sprite).color = color;
-                    }
-                })
+                .to(this._jumpTime, { r: this.getRandomColor(), g: this.getRandomColor(), b: this.getRandomColor(), a: this.getRandomColor() },
+                    {
+                        onUpdate: () => {
+                            this._bodySpirite.color = color;
+                        }
+                    })
                 .timeScale(2)
-                .to(this._jumpTime, { r: this._initColor.r, g: this._initColor.g, b: this._initColor.b, a: this._initColor.a }, {
-                    onUpdate: () => {
-                        this.node.getChildByName("Body").getComponent(Sprite).color = color;
-                    }
-                })
+                .to(this._jumpTime, { r: this._initColor.r, g: this._initColor.g, b: this._initColor.b, a: this._initColor.a },
+                    {
+                        onUpdate: () => {
+                            this._bodySpirite.color = color;
+                        }
+                    })
                 .timeScale(2)
                 .start();
         }
 
         this._curMoveIndex += step;
+    }
+
+    /**
+     * 获取随机颜色值
+     * @returns 
+     */
+    getRandomColor() {
+        return Math.floor(Math.random() * 256);
     }
 
     /**
